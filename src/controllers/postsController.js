@@ -1,14 +1,13 @@
 import { db, objectId } from '../dbStrategy/mongo.js';
 import joi from 'joi';
 
-export async function getPosts(req, res) {
+export async function getTransactions(req, res) {
   const session = res.locals.session;
 
   const posts = await db
-    .collection('posts')
+    .collection('transactions')
     .find({ userId: new objectId(session.userId) })
     .toArray();
-
   res.send(posts);
 }
 
@@ -21,7 +20,7 @@ export async function createTransaction(req, res) {
     description: joi.string().required(),
     value: joi.string().required(),
     date: joi.string().required(),
-    type: joi.string().required()
+    type: joi.string().required().valid(...['positive','negative'])
   });
 
   const { error } = postSchema.validate(post);
@@ -36,6 +35,6 @@ export async function createTransaction(req, res) {
     return res.sendStatus(401);
   }
 
-  await db.collection('posts').insertOne({ ...post, userId: session.userId });
+  await db.collection('transactions').insertOne({ ...post, userId: session.userId });
   res.status(201).send('Transação criada com sucesso');
 }
