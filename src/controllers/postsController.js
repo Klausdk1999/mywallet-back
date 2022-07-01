@@ -12,14 +12,16 @@ export async function getPosts(req, res) {
   res.send(posts);
 }
 
-export async function createPost(req, res) {
+export async function createTransaction(req, res) {
   const post = req.body;
   const { authorization } = req.headers;
   const token = authorization?.replace('Bearer ', '');
 
   const postSchema = joi.object({
-    titulo: joi.string().required(),
-    post: joi.string().required()
+    description: joi.string().required(),
+    value: joi.string().required(),
+    date: joi.string().required(),
+    type: joi.string().required()
   });
 
   const { error } = postSchema.validate(post);
@@ -35,5 +37,5 @@ export async function createPost(req, res) {
   }
 
   await db.collection('posts').insertOne({ ...post, userId: session.userId });
-  res.status(201).send('Post criado com sucesso');
+  res.status(201).send('Transação criada com sucesso');
 }
