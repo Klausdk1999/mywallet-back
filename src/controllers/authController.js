@@ -4,15 +4,22 @@ import { db } from '../dbStrategy/mongo.js';
 import joi from 'joi';
 
 export async function createUser(req, res) {
-  const usuario = req.body;
-
+  const body = req.body;
+  console.log(body);
+  if(req.body.password!==req.body.passwordConfirmation){
+    return res.sendStatus(422);
+  }
   const usuarioSchema = joi.object({
     name: joi.string().required(),
     email: joi.string().email().required(),
     password: joi.string().required(),
-    passwordCheck: joi.any().equal(joi.ref('password')).required()
   });
-
+  const usuario = {
+    name: body.name,
+    email: body.email,
+    password:body.password
+  }
+  
   const { error } = usuarioSchema.validate(usuario);
 
   if (error) {
@@ -24,7 +31,7 @@ export async function createUser(req, res) {
   const senhaCriptografada = bcrypt.hashSync(usuario.password, 10);
 
   //Cadastrar de fato os dados no banco com o a senha criptografada.
-  await db.collection('usuarios').insertOne({ ...usuario, password: senhaCriptografada,passwordCheck:senhaCriptografada});
+  await db.collection('usuarios').insertOne({ ...usuario, password: senhaCriptografada});
   res.status(201).send('Usuário criado com sucesso');
 }
 
@@ -43,14 +50,14 @@ export async function loginUser(req, res) {
   }
 
   //Preciso pegar o user pelo email
-  const user = await db.collection('usuarios').findOne({ email: usuario.email });
+  const userdb = await db.collection('usuarios').findOne({ email: usuario.email });
 
-  if (user && bcrypt.compareSync(usuario.password, user.password)) {
+  if (userdb && bcrypt.compareSync(usuario.password, userdb.password)) {
     const token = uuid();
 
     await db.collection('sessoes').insertOne({
       token,
-      userId: user._id
+      userId: userdb._id
     });
 
     return res.status(201).send({ token });
