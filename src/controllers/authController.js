@@ -59,8 +59,8 @@ export async function loginUser(req, res) {
       token,
       userId: userdb._id
     });
-
-    return res.status(201).send({ token });
+    const name=userdb.name;
+    return res.status(201).send({ token, name});
   } else {
     return res.status(401).send('Senha ou email incorretos!');
   }
