@@ -23,7 +23,8 @@
   },
   "contributors": [],
   "scripts": {
-    "start": "nodemon ./src/index.js"
+    "start": "node ./src/index.js",
+		"dev": "npx nodemon ./src/index.js"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

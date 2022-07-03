@@ -16,4 +16,4 @@ app.use(authRouter);
 app.use(postsRouter);
 
 const PORT = process.env.PORT || 5008;
-app.listen(PORT, () => console.log('Servidor rodou deboas'));
+app.listen(PORT, () => console.log("Server running on port " + process.env.PORT));
