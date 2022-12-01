@@ -4,7 +4,7 @@ import { Router } from 'express';
 
 const router = Router();
 
-router.get('/transactions', validateUser, getTransactions);
+router.get('/transaction', validateUser, getTransactions);
 router.post('/transaction', createTransaction);
 
 export default router;
